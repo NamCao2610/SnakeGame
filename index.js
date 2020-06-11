@@ -1,6 +1,8 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
+const ipc = require('electron').ipcMain;
+let soccer = 0;
 function createWindow() {
     const win = new BrowserWindow({
         width: 740,
@@ -16,6 +18,23 @@ function createWindow() {
         slashes: true
     }));
 }
+
+    ipc.on('client-send-increase-soccer', function(event, arg){
+        soccer++;
+        event.sender.send("main-send-increase-soccer", soccer);
+    });
+
+    ipc.on('client-send-resert', function(event, arg) {
+        soccer = 0;
+        event.sender.send('main-send-resert')
+    });
+
+    ipc.on('client-send-change-speed', function(event, arg){
+        soccer++;
+        event.sender.send("main-send-change-speed", arg);
+    });
+
+
 app.on('ready', createWindow);
 
 // const express = require('express');

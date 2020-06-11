@@ -1,4 +1,4 @@
-import MainScene from './MainScene.js'
+import MainScene from './MainScene.js';
 //Cau hinh game 
 const config = {
     width: 640,

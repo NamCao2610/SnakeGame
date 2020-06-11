@@ -1,5 +1,9 @@
+const ipc = require('electron').ipcRenderer;
+
 export default class Snake {
-    constructor(scene) {
+    constructor(scene) { 
+      this.changeSpeed();
+      // ipc.on('main-send-change-speed');
         //Thiet lap scene la man hinh chinh
         this.scene = scene;
         //Thoi gian di chuyen cuoi cung
@@ -35,6 +39,15 @@ export default class Snake {
         });
     }
 
+    changeSpeed() {
+      let speed = 500;
+      ipc.on('main-send-change-speed', function(event, arg){
+          speed = arg;
+          console.log(speed);
+      });
+      this.moveInterval = speed;
+    }
+
     //Ham chinh vi tri apple 
     positionApple() {
         //Phuong thuc lam tron vi tri ngau nhien cua qua tao sap cho duong di cua con ran trung khop voi qua tao
@@ -44,7 +57,7 @@ export default class Snake {
 
     //Su kien keydown
     keydown(event) {
-      console.log(event);
+      // console.log(event);
       switch (event.keyCode) {
         case 37: //arrow left
         //Thiet lap huong vector con ran di chuyen trai voi dieu kien dang sang trai thi khong the qua phai
@@ -83,22 +96,26 @@ export default class Snake {
       if(time >= this.lastMoveTime + this.moveInterval) {
           //Thoi gian se dc gan cho thoi gian cuoi
           this.lastMoveTime = time;
-          console.log(this.lastMoveTime)
+          // console.log(this.lastMoveTime)
           //Goi ham move
           this.move();
       }
     }
     //Ham di chuyen
     move() {
+
       //Gan 2 bien x va y di theo huong chi dinh nhan voi toc do va co the thay doi khi ta dung su kien keydown 
       let x = this.body[0].x + this.direction.x * this.titleSize;
       let y = this.body[0].y + this.direction.y * this.titleSize;
       
       if(this.apple.x === x && this.apple.y === y) {
+
         //Khi vi tri cua qua tao bang vi tri body 0 nghia la con ran an dc qua tao 
         //push them vao body cua ran va thay doi vi tri cua tao moi
         this.body.push(this.scene.add.rectangle(0, 0, this.titleSize,this.titleSize, 0xffffff).setOrigin(0));
         this.positionApple();
+        // console.log(object);
+        ipc.send('client-send-increase-soccer');
       }
 
       //Vong lap se gan nhung bo phan dang sau bang vi tri cu sau duoi con ran sau khi an apple
@@ -111,12 +128,16 @@ export default class Snake {
       //Di theo to DO Y thi gan bien y
       this.body[0].y = y
 
+   
+
+
       //Neu do dai cua dau con ran be hon 0 hoac lon hon width cua MainScene thi lose va restart()
       if(this.body[0].x < 0 || //left
          this.body[0].x >= this.scene.game.config.width || //right
          this.body[0].y < 0 || //top
          this.body[0].y >= this.scene.game.config.height //bottom
       ) {
+        ipc.send('client-send-resert');
         this.scene.scene.restart();
       }
       //Chet boi dam dau vao cai than cua con ran
@@ -125,7 +146,12 @@ export default class Snake {
       //Ham some tuong tu thu filter voi dieu kien length > 0 
       //Neu dau con ran ma bang vi tri 1 phan tu o trong tail thi lose
       if(tail.some(s => s.x === this.body[0].x && s.y === this.body[0].y)) {
+        ipc.send('client-send-resert');
          this.scene.scene.restart();
       }
+      
+      // console.log('body: ', this.body.length);
     }
+
+    
 }
