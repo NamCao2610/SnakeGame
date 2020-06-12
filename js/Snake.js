@@ -9,7 +9,6 @@ export default class Snake {
         //Thoi gian di chuyen cuoi cung
         this.lastMoveTime = 0;
         //Thoi gian di chuyen deu 0.5s +1x or 0.5s+ 1y
-        this.moveInterval = 100;
         //dinh nghia width va height cho con ran hinh vuong
         this.titleSize = 16;
         //Thiet lap huong vector con ran di chuyen khoi dau la di xuong
@@ -41,9 +40,9 @@ export default class Snake {
 
     changeSpeed() {
       let speed = 500;
-      ipc.on('main-send-change-speed', function(event, arg){
+      ipc.on('client-send-change-speed', function(event, arg){
           speed = arg;
-          console.log(speed);
+          console.log("Toi da bat duoc spped",arg);
       });
       this.moveInterval = speed;
     }
@@ -83,8 +82,14 @@ export default class Snake {
           this.stop = false;
           break;
         case 32: //space thi stop game
-          this.stop = true;
-          break;
+          if( this.stop == true ) {
+            this.stop = false;
+            break;
+          }
+          else {
+            this.stop = true;
+            break;
+          }
       }
     }
 
@@ -115,7 +120,7 @@ export default class Snake {
         this.body.push(this.scene.add.rectangle(0, 0, this.titleSize,this.titleSize, 0xffffff).setOrigin(0));
         this.positionApple();
         // console.log(object);
-        ipc.send('client-send-increase-soccer');
+        ipc.send('client-send-increase-score');
       }
 
       //Vong lap se gan nhung bo phan dang sau bang vi tri cu sau duoi con ran sau khi an apple

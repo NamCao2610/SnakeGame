@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose speed</title>
+    <link rel="stylesheet" href="materialize.min.css">
+</head>
+<body>
+    <div class="container">
+        <form>
+            <div>
+                <label >Choose speed: </label>
+                <select name="cars" id="myselect">
+                    <option value=100>Lv5</option>
+                    <option value=200>Lv4</option>
+                    <option value=300>Lv3</option>
+                    <option value=400>Lv2</option>
+                    <option value=500>Lv1</option>
+                </select>
+            </div>
+
+            <button type="submit" class="waves-effect waves-light btn">Choose</button>
+        </form>
+    </div>
+    <script>
+        const {ipcRenderer} = require('electron');
+        document.querySelector('form').addEventListener('submit',() => {
+            speed = document.getElementById("#speed").value
+            ipcRenderer.send('client-send-change-speed', speed)
+        })
+    </script>
+    <script src="./js/handleView.js"></script>
+</body>
+</html>
